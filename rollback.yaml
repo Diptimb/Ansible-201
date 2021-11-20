@@ -1,0 +1,10 @@
+---
+- name: Rollback
+  hosts: app
+  become: yes
+
+  vars:
+    ansistrano_deploy_to: "/var/www/html"
+    ansistrano_rollback_to_release: ""
+  roles:
+    -  ansistrano.rollback

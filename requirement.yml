@@ -1,0 +1,5 @@
+---
+  - name: Diptimb
+    scm: github
+    src: https://github.com/Diptimb/Ansible-201.git
+    

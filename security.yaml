@@ -1,0 +1,61 @@
+---
+ -
+   hosts: all
+   vars:
+    - user_password: 'newuser'
+    - email: Diptimayee.Bebarta@mindtree.com
+   gather_facts: no
+   become: yes
+   tasks:
+           - name: Update packages
+             yum:
+                     name: '*'
+                     state: latest
+           - name: Install Required Packages
+             yum:
+               name:
+                 - ntp
+                 - epel-release
+                 - firewalld
+                 - logwatch
+               state: present
+           - name: Add a new user named devops
+             user:
+                  name: devops
+                  shell: /bin/bash
+                  password: "{{ user_password }}"
+           - name: Add devops user to the sudoers
+             copy:
+                dest: "/etc/sudoers.d/devops"
+                content: "devops  ALL=(ALL)  NOPASSWD: ALL"
+           - name: Deploy SSH Key
+             authorized_key:
+                             user=devops
+                             key="{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+                             state=present
+           - name: Disable Password Authentication
+             lineinfile:
+                 dest=/etc/ssh/sshd_config
+                 regexp='^PasswordAuthentication'
+                 line="PasswordAuthentication no"
+                 state=present
+                 backup=yes
+           - name: Setup NTP
+             service: name=ntpd state=started enabled=yes
+           - name: Setup firewalld
+             firewalld:
+              port: 1234/tcp
+              permanent: true
+              state: enabled
+           - name: Disable Root ssh access
+             lineinfile:
+                   dest=/etc/ssh/sshd_config
+                   regexp='^PermitRootLogin'
+                   line="PermitRootLogin no"
+                   state=present
+                   backup=yes
+             notify:
+                    - restart ssh
+   handlers:
+   - name: restart ssh
+     service: name=sshd state=restarted

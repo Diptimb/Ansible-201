@@ -1,0 +1,7 @@
+---
+- hosts: localhost
+  tasks:
+    - name: git-pull
+      git:
+        repo: https://github.com/Diptimb/Ansible-201.git
+        dest: /Users/m1057892/ansible/workspace1/demo/
