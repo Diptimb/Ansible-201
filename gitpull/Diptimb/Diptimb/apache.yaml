@@ -1,0 +1,20 @@
+---
+      - name: Install Apache
+        yum:
+          name:
+            - httpd
+            - httpd-devel
+          state:
+            latest
+      - name: Check Apache status
+        service: name=httpd state=started enabled=yes
+      - name: Create directory for apache web page
+        file:
+          path: "/var/www/html"
+          state: directory
+      - name: Copy web page from local to servers
+        template:
+          src: "hello.html"
+          dest: "/var/www/html/hello.html"
+      - name: rsync
+        yum: name=rsync update_cache=yes state=present

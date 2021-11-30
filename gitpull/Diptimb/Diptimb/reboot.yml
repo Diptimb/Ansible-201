@@ -1,0 +1,10 @@
+---
+  - hosts: all
+    become: yes
+
+    tasks:
+      - name: Reboot all servers
+        reboot:
+          reboot_timeout: 300
+      - name: Upgrade all packages
+        yum: name="*" state=present

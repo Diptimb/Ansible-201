@@ -2,47 +2,37 @@
  -
    hosts: all
    vars:
-    - user_password: 'devops-ansible'
+    - user_password: 'newuser'
     - email: Diptimayee.Bebarta@mindtree.com
-      centos_common_required_packages:
-         - ufw
-         - fail2ban
-         - firewalld
-         - logwatch
    gather_facts: no
    become: yes
-
    tasks:
            - name: Update packages
              yum:
                      name: '*'
                      state: latest
            - name: Install Required Packages
-             yum: Install '{{item}}' -y
-             with_items: centos_common_required_packages
-
+             yum:
+               name:
+                 - ntp
+                 - epel-release
+                 - firewalld
+                 - logwatch
+               state: present
            - name: Add a new user named devops
              user:
                   name: devops
                   shell: /bin/bash
                   password: "{{ user_password }}"
-
            - name: Add devops user to the sudoers
              copy:
                 dest: "/etc/sudoers.d/devops"
                 content: "devops  ALL=(ALL)  NOPASSWD: ALL"
-
            - name: Deploy SSH Key
              authorized_key:
                              user=devops
                              key="{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
                              state=present
-           - name: Allow SSH traffic
-             ufw:
-               rule: allow
-               port: 22
-               proto: tcp
-
            - name: Disable Password Authentication
              lineinfile:
                  dest=/etc/ssh/sshd_config
@@ -50,10 +40,13 @@
                  line="PasswordAuthentication no"
                  state=present
                  backup=yes
-
-           - name: Setup UFW
-             ufw: state=enabled policy=deny
-
+           - name: Setup NTP
+             service: name=ntpd state=started enabled=yes
+           - name: Setup firewalld
+             firewalld:
+              port: 1234/tcp
+              permanent: true
+              state: enabled
            - name: Disable Root ssh access
              lineinfile:
                    dest=/etc/ssh/sshd_config
@@ -65,4 +58,4 @@
                     - restart ssh
    handlers:
    - name: restart ssh
-     service: name=ssh state=restarted
+     service: name=sshd state=restarted

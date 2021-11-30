@@ -1,0 +1,10 @@
+---
+# tasks file for gitdemo
+
+      - name: Reboot all servers
+        reboot:
+          reboot_timeout: 300
+      - name: Upgrade all packages
+        yum:
+          name: "*"
+          state: latest

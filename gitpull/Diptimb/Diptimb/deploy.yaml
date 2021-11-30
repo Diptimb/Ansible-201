@@ -1,0 +1,16 @@
+---
+
+- name: Deploy
+  hosts: app
+  become: yes
+
+  vars:
+     ansistrano_deploy_from: "{{ playbook_dir }}/"
+     ansistrano_deploy_to: "/var/www/html"
+     ansistrano_deploy_via: copy
+     ansistrano_version_dir: "releases"
+     ansistrano_after_symlink_tasks_file: "{{ playbook_dir }}/apache.yaml"
+     ansistrano_keep_releases: 5
+     ansistrano_current_via: rsync
+  roles:
+   - { role: ansistrano.deploy }
