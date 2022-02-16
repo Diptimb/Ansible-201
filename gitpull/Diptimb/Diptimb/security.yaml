@@ -3,7 +3,7 @@
    hosts: all
    vars:
     - user_password: 'newuser'
-    - email: Diptimayee.Bebarta@mindtree.com
+    - email: abd@dvb.com
    gather_facts: no
    become: yes
    tasks:
