@@ -3,7 +3,7 @@
    hosts: all
    vars:
     - user_password: 'devops-ansible'
-    - email: Diptimayee.Bebarta@mindtree.com
+    - email: abc.dvb@uyuiyo.com
       centos_common_required_packages:
          - ufw
          - fail2ban
